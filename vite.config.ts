@@ -13,6 +13,6 @@ export default defineConfig({
     server: { entry: "server" },
   },
   server: {
-    allowedHosts: ["brainrotmarket.duckdns.org"],
+    allowedHosts: true,
   },
 });
