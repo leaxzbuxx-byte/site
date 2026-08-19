@@ -16,4 +16,8 @@ export default defineConfig({
       allowedHosts: ["brainrotmarket.duckdns.org"],
     },
   },
+
+  nitro: {
+    preset: "node-server",
+  },
 });
