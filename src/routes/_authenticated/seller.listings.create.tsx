@@ -46,12 +46,44 @@ function CreateListing() {
   const [loading, setLoading] = useState(false);
 
   async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    const parsed = schema.safeParse(form);
-    if (!parsed.success) { toast.error(parsed.error.issues[0]!.message); return; }
-    setLoading(true);
+  e.preventDefault();
+
+  const parsed = schema.safeParse(form);
+
+  if (!parsed.success) {
+    toast.error(parsed.error.issues[0]!.message);
+    return;
+  }
+
+  if (!user) {
+    toast.error("Você precisa estar logado.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    // Busca o perfil do vendedor
+    const { data: sellerProfile, error: profileError } = await supabase
+      .from("seller_profiles")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error("Erro ao buscar seller profile:", profileError);
+      toast.error("Não foi possível encontrar seu perfil de vendedor.");
+      return;
+    }
+
+    if (!sellerProfile) {
+      toast.error("Seu perfil de vendedor ainda não foi criado.");
+      return;
+    }
+
+    // Cria o anúncio usando o ID do seller_profiles
     const { error } = await supabase.from("listings").insert({
-      seller_id: user!.id,
+      seller_id: sellerProfile.id,
       name: parsed.data.name,
       description: parsed.data.description || null,
       rarity: parsed.data.rarity,
@@ -61,11 +93,20 @@ function CreateListing() {
       image_url: parsed.data.image_url || null,
       status: "ACTIVE",
     });
-    setLoading(false);
-    if (error) { toast.error("Não foi possível publicar o anúncio."); return; }
+
+    if (error) {
+      console.error("Erro ao criar listing:", error);
+      toast.error(`Não foi possível publicar o anúncio: ${error.message}`);
+      return;
+    }
+
     toast.success("Anúncio publicado!");
+
     navigate({ to: "/seller" });
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <SiteLayout>
