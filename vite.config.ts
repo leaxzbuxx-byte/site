@@ -10,4 +10,8 @@ export default defineConfig({
   server: {
     allowedHosts: ["brainrotmarket.duckdns.org"],
   },
+
+  preview: {
+    allowedHosts: ["brainrotmarket.duckdns.org"],
+  },
 });
