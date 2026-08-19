@@ -136,26 +136,6 @@ function Home() {
           </Card>
         )}
       </section>
-
-      <section className="mx-auto max-w-7xl px-4 pb-20">
-        <h2 className="mb-5 text-2xl font-bold">Vendedores em destaque</h2>
-        {sellers && sellers.length > 0 ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {sellers.map((s: any) => (
-              <Card key={s.id} className="p-5 text-center">
-                <div className="mx-auto mb-3 grid size-14 place-items-center rounded-full bg-primary/20 text-lg font-bold text-primary">
-                  {(s.profiles?.username ?? s.display_name ?? "??").slice(0, 2).toUpperCase()}
-                </div>
-                <p className="font-semibold">{s.profiles?.username ?? s.display_name}</p>
-                <p className="text-sm text-muted-foreground">{s.total_sales} vendas</p>
-                <p className="text-sm text-warning">★ {Number(s.completion_rate).toFixed(0)}% conclusão</p>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <Card className="p-10 text-center text-muted-foreground">Ainda não há vendedores aprovados.</Card>
-        )}
-      </section>
     </SiteLayout>
   );
 }
