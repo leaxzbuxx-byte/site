@@ -45,7 +45,7 @@ function CreateListing() {
   const [form, setForm] = useState({ name: "", description: "", rarity: "", mutation: "", price: 10, quantity: 1, image_url: "" });
   const [loading, setLoading] = useState(false);
 
-  async function submit(e: React.FormEvent) {
+async function submit(e: React.FormEvent) {
   e.preventDefault();
 
   const parsed = schema.safeParse(form);
@@ -63,38 +63,23 @@ function CreateListing() {
   setLoading(true);
 
   try {
-    // Busca o perfil do vendedor
-    let { data: sellerProfile, error: profileError } = await supabase
-  .from("seller_profiles")
-  .select("id")
-  .eq("user_id", user.id)
-  .maybeSingle();
+    const { data: sellerProfile, error: profileError } = await supabase
+      .from("seller_profiles")
+      .select("id, user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
 
-if (profileError) {
-  console.error("Erro ao buscar seller profile:", profileError);
-  toast.error(profileError.message);
-  return;
-}
+    if (profileError) {
+      console.error("Erro ao buscar seller profile:", profileError);
+      toast.error(profileError.message);
+      return;
+    }
 
-if (!sellerProfile) {
-  const { data: newProfile, error: createProfileError } = await supabase
-    .from("seller_profiles")
-    .insert({
-      user_id: user.id,
-    })
-    .select("id")
-    .single();
+    if (!sellerProfile) {
+      toast.error("Seu perfil de vendedor ainda não foi criado.");
+      return;
+    }
 
-  if (createProfileError) {
-    console.error("Erro ao criar seller profile:", createProfileError);
-    toast.error(createProfileError.message);
-    return;
-  }
-
-  sellerProfile = newProfile;
-}
-
-    // Cria o anúncio usando o ID do seller_profiles
     const { error } = await supabase.from("listings").insert({
       seller_id: sellerProfile.user_id,
       name: parsed.data.name,
@@ -114,7 +99,6 @@ if (!sellerProfile) {
     }
 
     toast.success("Anúncio publicado!");
-
     navigate({ to: "/seller" });
   } finally {
     setLoading(false);
