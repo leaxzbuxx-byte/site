@@ -96,7 +96,7 @@ if (!sellerProfile) {
 
     // Cria o anúncio usando o ID do seller_profiles
     const { error } = await supabase.from("listings").insert({
-      seller_id: sellerProfile.id,
+      seller_id: sellerProfile.user_id,
       name: parsed.data.name,
       description: parsed.data.description || null,
       rarity: parsed.data.rarity,
