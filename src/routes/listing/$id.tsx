@@ -47,10 +47,14 @@ function ListingDetail() {
     queryKey: ["listing", id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("listings")
-        .select("*, seller:seller_id(*), profiles:seller_id(id, username, avatar_url)")
-        .eq("id", id)
-        .maybeSingle();
+  .from("listings")
+  .select("*")
+  .eq("id", id)
+  .maybeSingle();
+
+if (error) throw error;
+
+return data;
       if (error) throw error;
       return data as any;
     },
