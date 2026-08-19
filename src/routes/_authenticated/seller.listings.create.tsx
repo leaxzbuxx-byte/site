@@ -64,22 +64,35 @@ function CreateListing() {
 
   try {
     // Busca o perfil do vendedor
-    const { data: sellerProfile, error: profileError } = await supabase
-      .from("seller_profiles")
-      .select("id")
-      .eq("user_id", user.id)
-      .maybeSingle();
+    let { data: sellerProfile, error: profileError } = await supabase
+  .from("seller_profiles")
+  .select("id")
+  .eq("user_id", user.id)
+  .maybeSingle();
 
-    if (profileError) {
-      console.error("Erro ao buscar seller profile:", profileError);
-      toast.error("Não foi possível encontrar seu perfil de vendedor.");
-      return;
-    }
+if (profileError) {
+  console.error("Erro ao buscar seller profile:", profileError);
+  toast.error(profileError.message);
+  return;
+}
 
-    if (!sellerProfile) {
-      toast.error("Seu perfil de vendedor ainda não foi criado.");
-      return;
-    }
+if (!sellerProfile) {
+  const { data: newProfile, error: createProfileError } = await supabase
+    .from("seller_profiles")
+    .insert({
+      user_id: user.id,
+    })
+    .select("id")
+    .single();
+
+  if (createProfileError) {
+    console.error("Erro ao criar seller profile:", createProfileError);
+    toast.error(createProfileError.message);
+    return;
+  }
+
+  sellerProfile = newProfile;
+}
 
     // Cria o anúncio usando o ID do seller_profiles
     const { error } = await supabase.from("listings").insert({
