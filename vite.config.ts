@@ -12,4 +12,7 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  server: {
+    allowedHosts: ["brainrotmarket.duckdns.org"],
+  },
 });
